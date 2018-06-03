@@ -18,13 +18,17 @@ public class DiskScanner {
                 Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 c.add(Calendar.MONTH, -1);
                 long monthAgo = c.getTimeInMillis();
-                if (f.length() > 10240000 && f.lastModified() < monthAgo) {
+
+                long fileSizeInBytes = f.length();
+                long fileSizeInKB = fileSizeInBytes / 1024;
+                long fileSizeInMB = fileSizeInKB / 1024;
+                if (fileSizeInMB > 10 && f.lastModified() < monthAgo) {
                     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-                    filesMap.put(f.getName() + " modified: " + format.format(f.lastModified()), f.length());
+                    filesMap.put(f.getAbsolutePath() +  " modified: " + format.format(f.lastModified()), fileSizeInMB);
 
                     for (Map.Entry entry : filesMap.entrySet()) {
-                        System.out.println(entry.getKey() + " " + entry.getValue());
+                        System.out.println(entry.getKey() + " " + entry.getValue() + "Mb");
                     }
 
 
