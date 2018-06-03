@@ -5,11 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DiskScanner {
-
+    Map<String, Long> filesMap = new TreeMap<>();
     public void getAllFiles(File curDir) {
 
         File[] filesList = curDir.listFiles();
-        Map<String, Long> filesMap = new TreeMap<>();
+
 
         for (File f : filesList) {
             if (f.isDirectory())
@@ -25,16 +25,29 @@ public class DiskScanner {
                 if (fileSizeInMB > 10 && f.lastModified() < monthAgo) {
                     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-                    filesMap.put(f.getAbsolutePath() +  " modified: " + format.format(f.lastModified()), fileSizeInMB);
-
-                    for (Map.Entry entry : filesMap.entrySet()) {
-                        System.out.println(entry.getKey() + " " + entry.getValue() + "Mb");
-                    }
+                    filesMap.put(f.getAbsolutePath() + " modified: " + format.format(f.lastModified()), fileSizeInMB);
 
 
-                //    System.out.println(f.getName() + ": " + f.length() + " " + format.format(f.lastModified()));
+                    //    System.out.println(f.getName() + ": " + f.length() + " " + format.format(f.lastModified()));
                 }
+
             }
         }
+
+
+        for (Map.Entry entry : sortByValue(filesMap).entrySet()) {
+            System.out.println(entry.getKey() + " " + entry.getValue() + "Mb");
+        }
+    }
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+        list.sort(Map.Entry.comparingByValue());
+
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 }
